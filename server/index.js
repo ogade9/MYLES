@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
 const user = mongoose.model('User', userSchema)
 require('dotenv').config();
 const mongoURI = process.env.MONGO_URI
-const port = 5000
+const port = process.env.PORT || 5000
 
 mongoose.connect(mongoURI)
     .then(() => console.log("Successfully connected to mongo database"))
