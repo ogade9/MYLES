@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+/*import { ref } from "vue";
 import { RouterLink } from "vue-router";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user"
@@ -8,7 +8,7 @@ const email = ref("");
 const password = ref("");
 const router = useRouter();
 let vals;
-/*async function signin(e){
+*async function signin(e){
   e.preventDefault();
   const userData = {
     email: email.value,
