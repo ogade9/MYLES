@@ -1,5 +1,5 @@
 <script setup>
-import { RouterLink } from 'vue-router';
+/*import { RouterLink } from 'vue-router';
 import {ref,onMounted} from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -312,7 +312,7 @@ onMounted (async() => {
 
 
 
-})
+})*/
 
 
 </script>
@@ -324,132 +324,6 @@ onMounted (async() => {
 
 
 
-
-
-
-  <div class="sidenav" v-if="isSideNavOpen" @click.self="closeSideNav">
-    <img class="logo" src="/project2 files/Your paragraph text (1).svg"/>
-    <div class="profile-abbr2">
-    {{ abbr1}}{{ abbr2 }}</div>
-    <h1 class="profileName">{{ firstName }} {{ lastName }}</h1>
-    <h5 class="profileEmail">{{ userStore.email }}</h5>
-    <div class="section"></div>
-  <RouterLink to="/homepage" class="icon-button" :class="{ active: $route.path === '/homepage' }"><font-awesome-icon :icon="['fas', 'house']" />
-    Home</RouterLink>
-    <RouterLink class="icon-button" to="/profile"><font-awesome-icon :icon="['fas', 'calendar-days']" />
-      My Plans</RouterLink>
-    <RouterLink class="icon-button" to="/friends"><font-awesome-icon :icon="['fas', 'user-group']" />
-      Friends</RouterLink>
-    <RouterLink class="icon-button" to="/profile"><font-awesome-icon :icon="['far', 'circle-user']" />
-      View Profile</RouterLink>
-
-    <h3 class="account">Account</h3>
-    <div class="section"></div>
-
-    <div class="logout" @click.prevent="userStore.signout"> <font-awesome-icon :icon="['fas', 'right-from-bracket']" />LOG OUT</div>
-    <div  class="delete1" @click="userStore.deleteAccount"><font-awesome-icon :icon="['fas', 'trash']"  />
-      Delete Account</div>
-
-
-
-    </div>
-    <div class="body">
-      <div class="body2">
-   <div class="profile-container">
-    <div class="header-icons" >
-      <div  class="icon-box" @click="openSideNav"><font-awesome-icon :icon="['fas', 'bars']" /></div>
-
-      <RouterLink to="/friends"><div class="icon-box"><font-awesome-icon :icon="['fas', 'users']" /></div></RouterLink>
-  </div>
-
-</div>
-  <h1 class="welcome-message">Hi, {{firstName}}
-
-  </h1>
-  <div class="profile-abbr">
-    {{ abbr1}}{{ abbr2 }}
-
-  </div>
-  <RouterLink to="/Edit"><div class="edit-icon"><font-awesome-icon
-        :icon="['fas', 'pen']"
-
-      /></div></RouterLink>
-      <RouterLink to="/trips"><div class="createTrips">Plan A Trip</div></RouterLink>
-      <RouterLink to="/excursion"><div class="createTrips">Create An Excursion</div></RouterLink>
-
-  <div class="header-container">
-    <div class="trips-section">
-      <div class="trips-line"></div>
-      <div class="trips-line"></div>
-      <div class="trips-line"></div>
-      <div class="trips-line"></div>
-      <div class="trips-line"></div>
-      <div class="trips-line"></div>
-      <div class="trips-line"></div>
-      <div class="trips-line"></div>
-      <div class="trips-line"></div>
-      <div class="trips-line"></div>
-      <div class="trips-line"></div>
-      <div class="trips-line"></div>
-      <div class="trips-line"></div>
-      <div class="trips-line"></div>
-      <div class="trips-line"></div>
-    </div>
-  </div>
-
-<h2 class="profileTrips">Your Trips</h2>
-
-<div class="trip-container">
-<div class="trips" v-for="(item,index) in trips" :key="item.tripId">
-  <font-awesome-icon :icon="['fas', 'xmark']" @click="deleteTripById(index)"  class="delete2" />
-  <RouterLink :to="`/editTrip/${item.tripName}/${item.tripId}`">
-  <div class="tripfix">
-    <h4 class="tripname">{{item.tripName}}</h4>
-    <p class="tripdescription">{{ item.tripDescription }}</p>
-    <span class="tripDates">{{ item.tripStartDate }}</span> -
-    <span class="tripDates">{{ item.tripEndDate }}</span>
-  </div>
-  </RouterLink>
-</div>
-</div>
-
-
-
-<h2 class="profileTrips">Your Excursions</h2>
-<div class="trip-container">
-<div class="trips" v-for="(item,index) in excursions" :key="item.excursionId" >
- <RouterLink :to="`/invites/${item.excursionId}`"> <font-awesome-icon :icon="['fas', 'share-nodes']"   class="share"/></RouterLink>
-
-  <font-awesome-icon :icon="['fas', 'xmark']" @click="deleteExcursionById(index)" class="delete"/>
-  <RouterLink :to="`/editExcursion/${item.excursionName}/${item.excursionId}`">
-  <div class="tripfix">
-  <h4 class="tripname">{{item.excursionName}}</h4>
-  <p class="tripdescription">{{ item.excursionDescription }}</p>
-  <li  v-for="(items, index) in item.excursionTrips" :key="index" class="tripDates">{{ items }}</li>
-
-  </div>
-  </RouterLink>
-
-</div>
-<div class="received">
-  <h2>Received Invitations</h2>
-
-    <div v-show="check1==false" v-for="(item,index) in invitations " :key="index" >
-
-    <p>{{ item.firstName }}   {{ item.lastName }} </p>
-    <font-awesome-icon :icon="['fas', 'check']" class="accept" @click="inviteStore.acceptInvite(item.inviteId)" />
-    <font-awesome-icon :icon="['fas', 'xmark']" @click="inviteStore.declineInvite(item.inviteId)"  class="decline" />
-
-    </div>
-  </div>
-
-
-</div>
-
-  </div>
-
-  </div>
-  <Icons />
 
 </template>
 <style scoped>
