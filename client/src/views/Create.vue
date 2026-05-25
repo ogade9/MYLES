@@ -9,8 +9,7 @@ const fullname = ref('');
 const email = ref('');
 const username = ref('');
 const router = useRouter();
-const url = "http://localhost:5000"
-const postUrl = "http://localhost:5000/api/user"
+const postUrl = "https://myles-hdjv.onrender.com"
 //this is my url for my serevr
 
 function validatePassword(){
