@@ -2,7 +2,7 @@
 
 A full-stack web application that allows users to explore U.S. national parks, save favorites, and track parks they have visited using the National Parks API.
 ## Live Demo
-https://myles-mu.vercel.app
+https://myles-xi.vercel.app
 ## Current Features
 - Firebase Authentication
 - Email/password signup
