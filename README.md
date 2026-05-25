@@ -20,13 +20,13 @@ https://myles-mu.vercel.app
 - Image uploads
 ## Tech Stack
 
-### Frontend
+#### Frontend
 - Vue.js
 - Vite
 - Vue Router
 - Tailwind CSS
 
-### Backend
+#### Backend
 - Node.js
 - Express.js
 
