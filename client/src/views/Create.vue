@@ -1,17 +1,18 @@
 <script setup>
 import {ref} from 'vue';
-import {getAuth, createUserWithEmailAndPassword} from "firebase/auth";
+import {getAuth, createUserWithEmailAndPassword, sendEmailVerification} from "firebase/auth";
 import { auth } from "../firebase";
 import {useRouter} from 'vue-router'
+import firebase from 'firebase/compat/app';
 const password = ref('');
 const errorMessage = ref([]);
 const fullname = ref('');
 const email = ref('');
 const username = ref('');
+const verify = ref('');
 const router = useRouter();
 const postUrl = "https://myles-hdjv.onrender.com/api/user"
 //this is my url for my serevr
-
 function validatePassword(){
   const length = 8;
   const hasUpperCase = (password) => /[A-Z]/.test(password);
@@ -35,28 +36,35 @@ function validatePassword(){
     errorMessage.value.push("Password need to have at least one special character e.g '@$!_'")
   }
   if(errorMessage.value.length == 0){
+    // if there are no errors that is if the password is valid, then firebase will
+    // authenticate the use with the email and password
     createUserWithEmailAndPassword(auth,email.value,password.value).then((userCredential) => {
     const user = userCredential.user
+    const actionCodeSettings = {
+      url: 'https://myles-xi.vercel.app/signin'
+    }
+    //In order to confirm that the user is providing a valid email with a mailbox
+    // I'm using the sendEmailVerification() function
+    sendEmailVerification(user,actionCodeSettings).then(() =>{
+      verify.value = "Check your email to verify your account"
+    })
     postUserData(postUrl,{
     userId :  user.uid,
     fullname : fullname.value,
     email : email.value,
     username : username.value,})
-    })
-    .catch((error) => {
+    console.log("User data has been sent")
+    }).catch((error) => {
       const errorCode = error.code
       const errorMessage = error.message
-  })
-}
-    router.push('/signin')
-  
-  
+    })
+  }   
 }
 async function postUserData(url="", data={}){
   const response = await fetch(url, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "application/json", 
     },
     body: JSON.stringify(data),
   })
@@ -99,7 +107,18 @@ async function postUserData(url="", data={}){
         <input class="w-full bg-green-900 cursor-pointer hover:bg-opacity-20 rounded-lg border border-gray-300 px-4 py-3 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-200" type="submit" value="Create Account" >
       </div>
       <li v-for=" item in errorMessage" class="text-red-500">{{item}}</li>
+      <p  class="text-blue-500" v-bind="verify">{{verify}}</p>
     </form>
+    <div class="mb-2 flex">
+        <div class="text-center w-full font-bold text-text-sm border-t border-gray-300 px-4 mt-3 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-200"></div>
+        <span class="text-center rounded-lg px-1 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-200">OR</span>
+        <div class="w-full border-t mt-3 border-gray-300 px-4 py-3 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-200"></div>
+
+    </div>
+    <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="password" minlength = 8 ></label>
+        <div class="w-full text-center font-bold text-text-sm rounded-lg border border-gray-300 px-4 py-3 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-200">Continue with Google</div>
+    </div>
     <div class="flex flex-row gap-2 justify-center" >
     <p class="text-gray-500">Already have an account?</p>
     <RouterLink to="/signin" class="text-blue-500 underline">Sign in</RouterLink>
