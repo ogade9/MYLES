@@ -6,6 +6,8 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faHouse, faUser, faPlus, faBars, faUsers ,faLessThan,faMagnifyingGlass,faCalendarDays,faUserGroup,faRightFromBracket,faTrash,faXmark,faLocationDot,faArrowLeft,faCircleMinus,faShareNodes,faCheck} from '@fortawesome/free-solid-svg-icons'
 import { faCircleUser } from '@fortawesome/free-regular-svg-icons'
+import { HugeiconsIcon } from '@hugeicons/vue';
+import { Notification03Icon } from '@hugeicons/core-free-icons';
 // add icons to library
 library.add(faHouse, faUser, faPlus, faBars, faUsers,faLessThan,faMagnifyingGlass,faCircleUser,faCalendarDays,faUserGroup,faRightFromBracket,faTrash,faXmark,faLocationDot,faArrowLeft,faCircleMinus,faShareNodes,faCheck)
 import App from './App.vue'

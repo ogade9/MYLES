@@ -1,74 +1,65 @@
 <script setup>
-/*import { ref } from "vue";
-import { RouterLink } from "vue-router";
-import { useRouter } from "vue-router";
-import { useUserStore } from "@/stores/user"
-const userStore = useUserStore();
-const email = ref("");
-const password = ref("");
+import {ref} from 'vue';
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import {auth} from "../firebase"
+import {useRouter} from 'vue-router'
+const email = ref('');
+const password = ref('');
+const verify = ref('')
 const router = useRouter();
-let vals;
-*async function signin(e){
-  e.preventDefault();
-  const userData = {
-    email: email.value,
-    password: password.value,
-  };
-  const serverUrl = "https://excursions-api-server.azurewebsites.net/user/sign-in"
-  const options={
-    method: "POST",
-    headers:{
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(userData),
-  };
-  let response = await fetch(serverUrl,options);
-  if(response.status==200){
-    vals= await response.json();
-    console.log(vals)
-    localStorage.setItem("token", vals.token);
-    localStorage.setItem("email",vals.user.email)
-    localStorage.setItem("userId",vals.user._id)
-    router.push('/homepage')
-  }
-  else {
-    console.log(response.status);
-    return;
-  }
-}*/
-
+const url = "https://myles-hdjv.onrender.com/api/user/signin"
+function signIn(){
+  signInWithEmailAndPassword(auth, email.value, password.value)
+    .then((userCredential) => {
+      // Signed in 
+      const user = userCredential.user;
+      router.push('/homepage')
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      verify.value = "Invalid email or password!"
+    });
+}
 </script>
 <template>
-  <div class="body">
-   <div class="create">
-    <h1 class="signinheader">WELCOME.</h1>
-    <div class="formcontainer">
-      <form @submit.prevent="userStore.signin">
-        <div style="display:inline-block;">
-          <legend class="formlegend">Email</legend>
-          <input class="forminput1" type="email" v-model=userStore.email pattern="[^@\s]+@[^@\s]+" required>
-        </div>
-        <div>
-          <legend  class="formlegend">Password</legend>
-          <input  class="forminput1" type="password"  v-model=userStore.password minlength="8" required>
-        </div>
-        <input class="btn-create" type="submit" value="Log In" />
-        <span style="float:left;">Don't have an account? <RouterLink class="signinlink" to="/create" style="float:right">Create Account</RouterLink></span>
-      </form>
+<nav>
+</nav>
+<div class="min-h-screen flex items-center justify-center bg-stone-50 px-4">
+  <div class="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg py-20">
+    <h2 class="text-2xl font-bold">Welcome back</h2>
+    <p class= "text-gray-500">Sign in to keep planning.</p>
+    <div class="mb-8">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="password" minlength = 8 ></label>
+        <div class="w-full text-center font-bold text-text-sm rounded-lg border border-gray-300 px-4 py-3 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-200">Sign in with Google</div>
+    </div>
+    <div class="flex">
+        <div class="text-center w-full font-bold text-text-sm border-t border-gray-300 px-4 mt-3 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-200"></div>
+        <span class="text-center rounded-lg px-1 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-200">OR</span>
+        <div class="w-full border-t mt-3 border-gray-300 px-4 py-3 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-200"></div>
+
+    </div>
+    <form class="space-y-5 mt-8"  @submit.prevent="signIn">
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="email" >Email</label>
+        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-200" v-model = "email" type="email" placeholder="john@gmail.com" id="email" name="email" autocomplete="off">
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="password" minlength = 8 >Password</label>
+        <input class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-200" type="password" placeholder="" id="password" name="password" v-model="password" autocomplete="off">
+      </div>
+      <div class="mb-4">
+        <input class="w-full bg-green-900 cursor-pointer hover:bg-opacity-20 rounded-lg border border-gray-300 px-4 py-3 focus:border-green-600 focus:outline-none focus:ring-2 focus:ring-green-200" type="submit" value="Sign in" >
+      </div>
+      <p  class="text-red-500 text-sm text-bold" v-bind="verify">{{verify}}</p>
+    </form>
+    <div class="flex flex-row gap-2 justify-center" >
+    <p class="text-gray-500">New here?</p>
+    <RouterLink to="/create" class="text-blue-500 underline">Create account</RouterLink>
     </div>
   </div>
-  </div>
+
+</div>
+
 
 </template>
-<style scoped>
-.body{
-  width:100%;
-  height:100%;
-  margin-left: -10px;
-  margin-top: -10px;
-  margin-bottom: -2px;
-  padding: 0px;
-}
-
-
-</style>

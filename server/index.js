@@ -74,6 +74,16 @@ app.get("/api/user", cors(), async(req,res) => {
     // I used res here to send data back because an hypothetical "request" was
     //made
 })
+app.get("/api/user/signin", cors(), async(req,res) => {
+   
+    res.json(
+        {
+        message: "user sign-in connected"
+        }
+    )
+    // I used res here to send data back because an hypothetical "request" was
+    //made
+})
 app.post("/api/user", cors(), async(req,res) => {
    try{
     const newUser = user(req.body)
@@ -82,6 +92,18 @@ app.post("/api/user", cors(), async(req,res) => {
     console.log("After save")
     console.log(newUser)
     res.status(201).send("Added another user succesfully")
+   }catch(error){
+    res.status(400).send(error.message);
+   }
+
+    
+})
+app.post("/api/user/signin", cors(), async(req,res) => {
+   try{
+    const newUser = user(req.body)
+    await newUser.save()
+    console.log(newUser)
+    res.status(201).send("Added user sign in details succesfully")
    }catch(error){
     res.status(400).send(error.message);
    }

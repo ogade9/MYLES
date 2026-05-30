@@ -1,281 +1,148 @@
 <script setup>
-import Icons from '../components/Icons.vue';
-import {ref,onMounted,watch} from 'vue';
-import { usePark } from '../stores/parks';
+import {useRouter} from 'vue-router'
+import {ref} from 'vue';
+import Navbar from './Navbar.vue'
+import Footer from './Footer.vue'
 
-const nationalPark1=ref([]);
-const parks1 = usePark();
+//Write a function that retrieves from the national park api
+const search = ref('');
+const router = useRouter()
+let search_result = ref('')
 
-async function getParkName() {
+const key = "VETJHYmMiqooqDU2rs8Xpdfe5gbbhegddjAWqid8"
+async function getSearch(){
+  let url;
+  if(search.value.length == 2){
+    url = `https://developer.nps.gov/api/v1/parks?stateCode=${search.value}&limit=1&api_key=VETJHYmMiqooqDU2rs8Xpdfe5gbbhegddjAWqid8`
+      console.log(url)
+  }
+  else{
+    url = `https://developer.nps.gov/api/v1/parks?parkCode=${search.value}&stateCode=&limit=1&api_key=VETJHYmMiqooqDU2rs8Xpdfe5gbbhegddjAWqid8`
 
+
+
+  }
+  console.log(search.value)
+  const response = await fetch(url, {
+    method : "GET",
+    headers : {
+      "Content-Type" : "application/json",
+    },
+  })
+  if(response.ok){
+    console.log("it works")
+    const data = await response.json();
+    console.log(data.data)
+    //console.log("fullName:", data.data[0].fullName)
+    search_result.value = data.data[0]
+    console.log(search_result.value)
+  }
+  else{
+    throw new Error(`Response status ${response.status}`)
+  }
 }
-
 </script>
-
 <template>
-  <div class="body">
-  <div class="overlay">
-  <h1 class="homepage">Plan your next adventure</h1>
-  <p class="about"> Create custon trips and unforgettable excursions...</p>
-  <h3 class="header">Featured Parks</h3>
-  <div class="featuredParks">
-
-    <div class="parkContainer">
-
-
-      <img src="https://www.nps.gov/common/uploads/structured_data/3C84C3C0-1DD8-B71B-0BFF90B64283C3D8.jpg" class="parkImages">
-      <h2 class="parkHeader">Yosemite National Park</h2>
-    <div class="wrapper">
-       <RouterLink to="/details/yose/CA" ><h4 class="featuredParkName">View Park</h4></RouterLink></div>
+    <Navbar/>
+  <div class="min-h-screen py-30 flex flex-col px-4  space-y-3 overflow-y-auto pb-24 bg-white justify-center w-full px-20">
+    <h2 class="text-2xl font-bold">Find a park</h2>
+    <p class= "text-gray-500 text-sm">Search by parkCode</p>
+  <form @submit.prevent="getSearch">  
+    <div class="flex gap-2 mt-12">
+          <div class="relative flex-1">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input
+              v-model = "search"
+              type="text"
+              placeholder="e.g. Yose, Glac, Yell"
+              class="w-full h-9 pl-9 pr-3 rounded-sm  shadow-lg bg-card text-sm placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/40"
+            />
+          </div>
+          <button class="h-9 px-4 rounded-md bg-black shadow-lg focus:outline-none focus:ring-2 focus:ring-green-200 text-primary-foreground text-sm text-white font-medium hover:bg-primary/90">
+            Search
+          </button>
+          <!--<p v-if="search && filteredItems.length === 0"> No results found for "{{ search }}"</p>-->
     </div>
-    <div class="parkContainer">
-      <img src="https://www.nps.gov/common/uploads/structured_data/C20E6CD3-CDF7-B3AB-8448CDCD7FD590FF.jpg" class="parkImages">
-    <h2 class="parkHeader">Glacier National Park</h2>
-    <div class="wrapper">
-       <RouterLink to="/details/glac/MT" ><h4 class="featuredParkName">View Park</h4></RouterLink></div>
-    </div>
-    <div class="parkContainer">
-        <img src="https://www.nps.gov/common/uploads/structured_data/3C798EAB-1DD8-B71B-0BC4BEFB197F2C90.jpg" class="parkImages">
-       <h2 class="parkHeader">Kenai Fjords National Park</h2>
-      <div class="wrapper">
-       <RouterLink to="/details/kefj/AK" ><h4 class="featuredParkName">View Park</h4></RouterLink></div>
-    </div>
+  </form>
+  <RouterLink :to="`/details/${search_result.parkCode}`" class="cursor-pointer bg-card">
+    <div class="flex flex-col items-center text-sm text-wrap justify-center border border-border border-pink-200 shadow-sm shadow-pink-200 p-1 rounded-lg">{{ search_result.fullName }}</div></RouterLink>
 
-  <div class="parkContainer">
-    <img src="https://www.nps.gov/common/uploads/structured_data/3C8397D6-1DD8-B71B-0BEF4C54462A1EB3.jpg" class="parkImages">
-    <h2 class="parkHeader">Appalachian National Scenic Trail</h2>
-  <div class="wrapper">
-      <RouterLink to="/details/appa/CT,GA,MA,MD,ME,NC,NH,NJ,NY,PA,TN,VA,VT,WV" ><h4 class="featuredParkName">View Park</h4></RouterLink></div>
-    </div>
 
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-col-3 gap-6 mt-20 mx-width-md">
+    <a href="#" class="block rounded-lg overflow-hidden bg-card hover:border-primary border border-gray-300 transition">
+          <div class="h-32 bg-gray-100 bg-secondary/60 grid place-items-center border border-bottom border-gray-200 text-xs text-muted ">
+            [ Yosemite photo ]
+          </div>
+      <div class="p-4">
+            <div class="flex justify-between bg-white items-baseline">
+              <h3 class="font-semibold">Yosemite</h3>
+              <span class="text-xs text-muted">California</span>
+            </div>
+            <p class="text-sm text-muted mt-1">Granite cliffs, giant sequoias, and waterfalls.</p>
+          </div>
+      </a>
+      <a href="#" class="block rounded-lg overflow-hidden bg-card hover:border-primary border border-gray-300 transition">
+          <div class="h-32 bg-gray-100 bg-secondary/60 grid place-items-center border border-bottom border-gray-200 text-xs text-muted ">
+            [ Yellowstone photo ]
+          </div>
+      <div class="p-4">
+            <div class="flex justify-between bg-white items-baseline">
+              <h3 class="font-semibold">Yellowstone</h3>
+              <span class="text-xs text-muted">Wyoming</span>
+            </div>
+            <p class="text-sm text-muted mt-1">Geysers, hot springs, and wildlife across volcanic terrain.</p>
+          </div>
+      </a>
+      <a href="#" class="block rounded-lg overflow-hidden bg-card hover:border-primary border border-gray-300 transition">
+          <div class="h-32 bg-gray-100 bg-secondary/60 grid place-items-center border border-bottom border-gray-200 text-xs text-muted ">
+            [ Zion photo ]
+          </div>
+      <div class="p-4">
+            <div class="flex justify-between bg-white items-baseline">
+              <h3 class="font-semibold">Zion</h3>
+              <span class="text-xs text-muted">Utah</span>
+            </div>
+            <p class="text-sm text-muted mt-1">Red rock canyons and the iconic Narrows river hike.</p>
+          </div>
+      </a>
+      <a href="#" class="block rounded-lg overflow-hidden bg-card hover:border-primary border border-gray-300 transition">
+          <div class="h-32 bg-gray-100 bg-secondary/60 grid place-items-center border border-bottom border-gray-200 text-xs text-muted ">
+            [ Acadia photo ]
+          </div>
+      <div class="p-4">
+            <div class="flex justify-between bg-white items-baseline">
+              <h3 class="font-semibold">Acadia</h3>
+              <span class="text-xs text-muted">Maine</span>
+            </div>
+            <p class="text-sm text-muted mt-1">Rugged Atlantic coastline and Cadillac Mountain sunrises.</p>
+          </div>
+      </a>
+      <a href="#" class="block rounded-lg overflow-hidden bg-card hover:border-primary border border-gray-300 transition">
+          <div class="h-32 bg-gray-100 bg-secondary/60 grid place-items-center border border-bottom border-gray-200 text-xs text-muted ">
+            [ Glacier photo ]
+          </div>
+      <div class="p-4">
+            <div class="flex justify-between bg-white items-baseline">
+              <h3 class="font-semibold">Glacier</h3>
+              <span class="text-xs text-muted">Montana</span>
+            </div>
+            <p class="text-sm text-muted mt-1">Alpine lakes, glaciers, and the Going-to-the-Sun Road.</p>
+          </div>
+      </a>
+      <a href="#" class="block rounded-lg overflow-hidden bg-card hover:border-primary border border-gray-300 transition">
+          <div class="h-32 bg-gray-100 bg-secondary/60 grid place-items-center border border-bottom border-gray-200 text-xs text-muted ">
+            [ Yosemite photo ]
+          </div>
+      <div class="p-4">
+            <div class="flex justify-between bg-white items-baseline">
+              <h3 class="font-semibold">Yosemite</h3>
+              <span class="text-xs text-muted">California</span>
+            </div>
+            <p class="text-sm text-muted mt-1">Granite cliffs, giant sequoias, and waterfalls.</p>
+          </div>
+      </a>
   </div>
-    <RouterLink to="/search"><div class="explore">Explore More Parks</div></RouterLink>
-
-
-
-
-
-
-
+  <Footer/>
   </div>
-
-
-  <Icons />
-</div>
-
-
-
-
+  
 </template>
-<style scoped>
-
-.body {
-  background-image: url("https://i.pinimg.com/736x/8f/49/ec/8f49ec216bb710291efad0443fec67b2.jpg");
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-  padding: 0;
-  width: 100%;
-  height:100%;
-  margin-left: -10px;
-  margin-top: -10px;
-  margin-bottom: -2px;
-  overflow-x: hidden;
-  font-family:Arial, Helvetica, sans-serif
-
-
-
-}
-.overlay{
-  background-color: rgba(5, 5, 5, 0.5);
-  height: 100%;
-  width: 100%;
-  padding: 10px;
-}
-.campcontain{
-  position: relative;
-  margin-top: -150px;
-  width:230px;
-  background-color: white;
-  display: flex;
-  margin-bottom: 100px;
-}
-
-.explore{
-  height: 40px;
-  width: 200px;
-  background-color: rgba(61, 58, 58, 0.5);
-  text-align: center;
-  color: aliceblue;
-  backdrop-filter: blur(15px);
-  justify-self: center;
-  position: relative;
-  top:10px;
-  font-size: large;
-  padding-top: 12px;
-  box-shadow:rgba(31, 38, 100, 0.1);
-  border-radius: 20px;
-}
-.explore:hover{
-  color: cadetblue;
-  backdrop-filter: blur(19px);
-}
-.about{
-  position: relative;
-  text-align: center;
-  font-size: small;
-  padding: 10px;
-  margin-top: -15px;
-  color: white;
-}
-
-.featuredCampgrounds{
-  position: relative;
-  height: 100px;
-  margin-bottom:100px;
-
-}
-.featuredcampName{
-  font-size: 10px;
-}
-.campcontain{
-  height: 50px;
-  top:120px;
-
-}
-.campHeader{
-  text-align: center;
-  position: relative;
-  top:-30px;
-}
-
-
-/* Text Headings */
-.homepage {
-  font-size: 30px;
-  color:antiquewhite;
-}
-
-.header {
-  position: relative;
-  text-align: center;
-  top: 50px;
-  font-size: 20px;
-  margin-top: 30px;
-
-
-}
-
-.subheading {
-  font-size: 1.55rem;
-  color: white;
-  margin-top: -10px;
-  position: relative;
-}
-
-/* Featured Parks Section */
-.featuredParks {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  box-shadow: 0 0px 0px rgba(18, 16, 16, 0.1);
-  overflow-x: scroll;
-  height:300px;
-  gap:10px;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-.featuredParks::-webkit-scrollbar {
-    display: none;
-}
-.parkContainer{
-  position: relative;
-  top:40px;
-  height:230px;
-  width: 200px;
-  border-radius: 30px;
-  background-color: rgba(5, 5, 5, 0.5);
-  backdrop-filter: blur(10px);
-}
-
-.parkHeader {
-  margin-left: 0px;
-  position: relative;
-  font-size: medium;
-  color: antiquewhite;
-  text-align: center;
-  top: 15px;
-}
-
-.parkImages {
-  width: 120px;
-  height: 70px;
-  padding: 0px;
-  margin-left: 20px;
-  margin-right: 20px;
-  border-radius: 20px;
-  justify-self:center;
-  position: relative;
-  justify-content: center;
-  justify-items: center;
-  display: flex;
-  flex-direction: column;
-  top:20px;
-
-}
-
-.featuredParkName {
-  font-size: 15px;
-  text-align: center;
-  position: relative;
-  bottom: -4px;
-}
-
-
-.wrapper {
-  background-color: beige;
-  height: 30px;
-  border-radius: 30px;
-  font-size: small;
-  position: relative;
-  justify-content: center;
-  justify-self: center;
-  width: 90px;
-
-}
-
-.wrapper2 {
-
-  width: 160px;
-  height: 45px;
-  border-radius: 30px;
-  margin-left: 40px;
-  position: relative;
-}
-
-
-
-
-.searchBox {
-  width: 150px;
-  height: 30px;
-  background-color: aliceblue;
-  border-radius: 5px;
-  text-align: center;
-  position: relative;
-  top: 10px;
-}
-
-.icons-wrapper {
-  margin-top: 20px;
-}
-
-</style >
-
-
-
-
-
-
-
-

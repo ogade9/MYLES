@@ -1,524 +1,278 @@
 <script setup>
-import Icons from '@/components/Icons.vue';
-import {usePark} from '@/stores/parks';
-import { useRoute } from 'vue-router';
-import {ref,onMounted} from 'vue';
+import Navbar from './Navbar.vue';
+import Footer from './Footer.vue';
+import {useRoute} from 'vue-router';
+import { ref,onMounted } from 'vue';
+import { HugeiconsIcon } from '@hugeicons/vue'
+import { Location01Icon } from '@hugeicons/core-free-icons'
 
-const parks = usePark();
-const parkcodes = parks.parkCodes;
-const statecodes = parks.stateCodes;
-const campgrounds=ref([]);
-const thingsTodo=ref([]);
-const campGallery = ref([]);
+//get Park detailss
+const route = useRoute()
+const parkcode = route.params.parkCode
+const parkName = ref(null)
+const line1 = ref(null)
+const  line2 = ref(null)
+const cityName = ref(null)
+const stateName = ref(null)
+const description = ref(null)
+const feedescription = ref(null)
+const entrancefees = ref([''])
+const expanded = ref(false)
 
-//const currentStart1 = ref(0);
-const route = useRoute();
-const parkName = ref('');
-const parkDescription = ref('');
-console.log("here1")
-const parkcode1= route.params.parks;
-const statecode1 = route.params.states;
-const parkImage = ref('');
-const parkStates=ref('');
-const parkGallery = ref([]);
-const thingsImages = ref([]);
-const campgroundsImages = ref('');
-
-async function generateRandomText(){
-
-
-    const token = localStorage.getItem("token")
-    const serverUrl = `https://excursions-api-server.azurewebsites.net/multimedia/galleries?parkcode=${parkcode1}&limit=21&number=21&start=0`
-
-    const options ={
-      method: 'GET',
-      headers: {Authorization: `Bearer ${token}`},
-    };
-    const response = await fetch(serverUrl,options)
-    const data = await response.json();
-    if(response.status==200){
-        //console.log(data.data[i].url)
-
-        //console.log(data)
-        parkImage.value= data.data[0].images[0].url
-
-        //titles.value.push(data.data[i].title)
-        //console.log(titles.value)
-        //console.log('OKAY')
-        //console.log(nationalPark1.value)
-
-    }
-    else{
-      console.log('Uh oh!')
-    }
-
-
-
-}
-async function generateParkGallery(){
-
-
- const token = localStorage.getItem("token")
- const serverUrl = `https://excursions-api-server.azurewebsites.net/multimedia/galleries?parkcode=${parkcode1}&limit=100`
-
- const options ={
-   method: 'GET',
-   headers: {Authorization: `Bearer ${token}`},
- };
- const response = await fetch(serverUrl,options)
- const data = await response.json();
- if(response.status==200){
-     //console.log(data.data[i].url)
-
-     console.log(data)
-     for(let i=0;i<data.data.length;i++){
-       parkGallery.value.push(data.data[i].images[0].url)
-      //console.log('Gallery',parkGallery.value)
-     //titles.value.push(data.data[i].title)
-     //console.log(titles.value)
-     //console.log('OKAY')
-     //console.log(nationalPark1.value)
-    }
- }
- else{
-   console.log('Uh oh!')
- }
-
-
-
-}
-//onMounted(()=>{generateRandomText()});
-
-
-
-onMounted( async () => {
-
-  const token= localStorage.getItem("token");
-  const serverUrl= `https://excursions-api-server.azurewebsites.net/national-parks/summary?parkCode=${parkcode1}&stateCode=${statecode1}&limit=1&number=1&start=0`;
-  const options= {
+console.log(parkcode)
+async function getParkData(){
+  const url = `https://developer.nps.gov/api/v1/parks?parkCode=${parkcode}&stateCode=&limit=1&api_key=VETJHYmMiqooqDU2rs8Xpdfe5gbbhegddjAWqid8` 
+  console.log(url)
+  const response = await fetch(url, {
     method: "GET",
-    headers: { Authorization: `Bearer ${token}` },
-  };
-
-  const response= await fetch(serverUrl,options);
-  console.log("here")
-  const data = await response.json();
-  if(response.status==200){
-    console.log("Got summaries")
+    headers: {
+      "Content-Type" : "application/json",
+    },
+  })
+  if(response.ok){
+    console.log("It works")
+    const data = await response.json()
     console.log(data)
-    parkName.value= data.data[0].fullName
-    parkDescription.value=data.data[0].description
-    parkStates.value=data.data[0].states
+    parkName.value = data.data[0].fullName
+    line1.value = data.data[0].addresses[0].line1
+    line2.value = data.data[0].addresses[0].line2
+    cityName.value= data.data[0].addresses[0].city
+    stateName.value = data.data[0].states
+    description.value = data.data[0].description
+    feedescription.value = data.data[0].operatingHours[0].description
+    entrancefees.value = data.data[0].entranceFees
+
+    console.log("Name:",parkName)
   }
   else{
-    console.log(response.status);
+    throw new Error(`Response status: ${response.status}`)
   }
-});
-async function getCamps(){
-  const token = localStorage.getItem("token")
-  console.log('Bug')
-  console.log(parkcode1)
-  console.log(statecode1)
-  const serverUrl= `https://excursions-api-server.azurewebsites.net/campgrounds?parkCode=${parkcode1}&stateCode=${statecode1}&limit=100&start=0`;
-  const options = {
-    method: "GET",
-    headers: { Authorization: `Bearer ${token}` },
-  };
-  const response = await fetch(serverUrl,options);
-  const data = await response.json();
-  if(response.status==200){
-   // console.log("Full API response:", data);
-    //console.log("Okayy!", data.data);
-    //result1.value.style.display = "flex";
-    console.log(data)
-
-    for(let i=0;i<data.data.length;i++){
-      campgrounds.value.push({
-        name:data.data[i].name,
-        images:data.data[i].images[0].url
-
-
-      });
-      //console.log('Camps:',campgrounds.value);
-
-    }
-   // currentStart1.value+=5;
-
-
-  }
-
-  else{
-    console.log(response.status);
-  }
-
-
-};
-
-getCamps();
-
-async function getThingsToDo(){
-  const token = localStorage.getItem("token")
-  console.log('Bug')
-  console.log(parkcode1)
-  console.log(statecode1)
-  const serverUrl= `https://excursions-api-server.azurewebsites.net/things-to-do?parkCode=${parkcode1}&stateCode=${statecode1}&limit=100&start=0`;
-  const options = {
-    method: "GET",
-    headers: { Authorization: `Bearer ${token}` },
-  };
-  const response = await fetch(serverUrl,options);
-  const data = await response.json();
-
-  if(response.status==200){
-    console.log("Full API response:", data);
-    console.log("Okayy!", data.data);
-    //result1.value.style.display = "flex";
-
-
-    for(let i=0;i<data.data.length;i++){
-     // thingsImages.value.push(data.data[i].images[0].url)
-      thingsTodo.value.push({
-        name:(data.data[i].activities[0].name),
-        images:(data.data[i].images[0].url)
-      });
-      console.log('Things:',thingsTodo.value);
-    }
-   // currentStart1.value+=5;
-
-
-  }
-
-  else{
-    console.log(response.status);
-  }
-
-
-};
-
-getThingsToDo();
-generateRandomText();
-generateParkGallery();
-
-
+}
+onMounted( async () =>{
+  await getParkData()
+})
 </script>
 <template>
-  <div class="body">
-  <div class="background">
-  <div class="imageContainer">
+  <div class="min-h-screen mt-15 flex flex-col  overflow-y-auto bg-white w-full px-10">
+    <Navbar/>
+    <!--Hero Image-->
+    <section class="relative">
+    <img
+      class="h-72 w-full object-cover"
+    />
 
-    <div class="imageText">
-      <RouterLink to="/search"><div class="back"><font-awesome-icon :icon="['fas', 'arrow-left']" class="previous" /></div></RouterLink>
-      <font-awesome-icon :icon="['fas', 'location-dot']" class="location"/>
-     <h5 class="parkname">{{parkName }}, {{ parkStates }}
-      </h5>
+    <button
+      class="absolute top-4 left-4 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow"
+    >
+      ←
+    </button>
+
+    <button
+      class="absolute top-4 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow"
+    >
+      ♡
+    </button>
+  </section>
+    <!--Title-->
+    <div class="flex items-start justify-between mt-10">
+      <div>
+        <h1 class="text-4xl font-bold">
+          {{ parkName }}
+        </h1>
+
+      </div>
+
+      <button
+        class="rounded-2xl bg-pink-500 px-6 py-4 font-semibold text-white"
+      >
+        + Add to Trip
+      </button>
+    </div>
+    <div class="flex flex-row  space-x-1 text-sm text-gray-400">
+      <span class="text-sm"><HugeiconsIcon class="text-pink-300 h-5":icon="Location01Icon"/></span>
+      <span>{{ line1 }},</span>
+      <span>{{ line2}},</span>
+      <span>{{ cityName }},</span>
+      <span>{{ stateName }}</span>
+    </div>
+    <div>
+      <div class="text-lg mt-5 mb-2 font-bold">Description</div>
+      <p :class="[' text-ellipsis text-wrap truncate', expanded ? 'line-clamp-none': 'line-clamp-3']">{{ description }}</p>
+      <button class="text-pink-400 cursor-pointer"@click = "expanded = !expanded">{{ expanded ? 'Read less' : 'Read more' }}</button>
+    </div>
+    <!--Operating Hours-->
+    <div>
+      <div class="text-lg mt-5 mb-2 font-bold">Operating Hours</div>
+      <p class="text-xs italic">{{feedescription}}</p>
+      <div v-for="item in standardhours" :key="item">{{item}}</div>
+    </div>
+
+    <!--Map-->
+    <div class="h-50 mt-5 w-full bg-gray-100 bg-secondary/60 grid place-items-center border border-bottom border-gray-200 text-xs mb-50 ">
+            [ Park Map  ]
+    </div>
+    <div class="min-h-screen bg-white pb-24">
+  <!-- Stats -->
+    <div class="mt-8 grid grid-cols-2 gap-4">
+      <div class="rounded-xl border p-4">
+        <p class="font-semibold">Open Year Round</p>
+        <p class="text-sm text-gray-500">
+          24/365 days
+        </p>
+      </div>
+
+      <div class="rounded-xl border p-4">
+        <p class="font-semibold">Park Size</p>
+        <p class="text-sm text-gray-500">
+          1,583 sq mi
+        </p>
+      </div>
+
+      <div class="rounded-xl border p-4">
+        <p class="font-semibold">Trails</p>
+        <p class="text-sm text-gray-500">
+          700+ miles
+        </p>
+      </div>
+
+      <div class="rounded-xl border p-4">
+        <p class="font-semibold">Pets Allowed</p>
+        <p class="text-sm text-gray-500">
+          On Leash
+        </p>
+      </div>
+    </div>
+
+    <!-- Fees -->
+    <div class="mt-10">
+      <h2 class="text-3xl font-bold">
+        Fees & Passes
+      </h2>
+
+      <div class="mt-6 grid gap-4">
+        <div class="rounded-2xl border p-5 shadow-sm">
+          <h3 class="font-bold text-xl">
+            Vehicle Pass
+          </h3>
+
+          <p class="mt-2 text-2xl font-bold text-pink-500">
+            $35
+          </p>
+
+          <ul class="mt-4 space-y-2 text-gray-600">
+            <li>• Valid for 7 days</li>
+            <li>• Admits 1 vehicle</li>
+            <li>• Non-transferable</li>
+          </ul>
+
+          <button
+            class="mt-4 text-pink-500 font-semibold"
+          >
+            View Details →
+          </button>
+        </div>
+
+        <div class="rounded-2xl border p-5 shadow-sm">
+          <h3 class="font-bold text-xl">
+            Individual Pass
+          </h3>
+
+          <p class="mt-2 text-2xl font-bold text-pink-500">
+            $20
+          </p>
+        </div>
+
+        <div class="rounded-2xl border p-5 shadow-sm">
+          <h3 class="font-bold text-xl">
+            Motorcycle Pass
+          </h3>
+
+          <p class="mt-2 text-2xl font-bold text-pink-500">
+            $25
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Things To Do -->
+    <div class="mt-10">
+      <div class="flex justify-between items-center">
+        <h2 class="text-3xl font-bold">
+          Things To Do
+        </h2>
+
+        <button class="text-pink-500 font-semibold">
+          See All
+        </button>
+      </div>
+
+      <div class="mt-5 flex gap-4 overflow-x-auto">
+        <div
+          class="min-w-[220px] overflow-hidden rounded-2xl"
+        >
+          <img
+            class="h-36 w-full object-cover"
+          />
+          <div class="bg-black/80 p-3 text-white">
+            Hiking
+          </div>
+        </div>
+
+        <div
+          class="min-w-[220px] overflow-hidden rounded-2xl"
+        >
+          <img
+            class="h-36 w-full object-cover"
+          />
+          <div class="bg-black/80 p-3 text-white">
+            Boating
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Plan Visit -->
+    <div class="mt-10">
+      <h2 class="text-3xl font-bold">
+        Plan Your Visit
+      </h2>
+
+      <div class="mt-4 rounded-2xl border">
+        <div
+          class="flex items-center justify-between border-b p-5"
+        >
+          <div>
+            <h3 class="font-semibold">
+              Visitor Centers
+            </h3>
+            <p class="text-gray-500">
+              Find hours and locations
+            </p>
+          </div>
+
+          →
+        </div>
+
+        <div
+          class="flex items-center justify-between p-5"
+        >
+          <div>
+            <h3 class="font-semibold">
+              Getting Here
+            </h3>
+            <p class="text-gray-500">
+              Directions & transportation
+            </p>
+          </div>
+
+          →
+        </div>
+      </div>
     </div>
 </div>
-  <div class="parkname2">{{ parkName }}</div>
-  <h3 class="section-title"> Description</h3>
-
-    <div class="park-Description">{{ parkDescription }}</div>
-    <h3 class="sectiontitle">Gallery</h3>
-    <div class="parkGallery2">
-
-      <div v-for="(item,index) in parkGallery" :key="index" class="parkGalleryContainer">
-        <img :src="item" class="parkGallery">
-      </div>
-
-      </div>
-
-      <h5 class="sectiontitle">Campgrounds</h5>
-    <div class="result2">
-
-
-      <RouterLink v-for="(names,index) in campgrounds"  :to="`/campgrounds/${parkcode1}/${names.name}`" class="resultBox2" :key="index" >
-
-        <img :src="names.images" class="campImages">{{names.name}}</RouterLink>
-
-    </div>
-
-      <div v-if="campgrounds.length === 0" class="resultBox1">
-      No campgrounds found.
-      </div>
-
-  <h5 class="sectiontitle">Things To Do</h5>
-    <div class="thingsResult">
-
-    <RouterLink v-for="(names,index) in thingsTodo"  :to="`/campgrounds/${parkcode1}/${thingsTodo[index]}`" class="resultBox" :key="index" >
-      <img :src="names.images" class="thingsTodoImages">
-     <div class="thingsName">{{names.name}}</div></RouterLink></div>
-    <div v-if="thingsTodo.length === 0" class="resultBox2">
-      No activities here.
-    </div>
-    <RouterLink :to= "`/trips/${parkName}/${parkState}`" ><div class="createTrips">Add</div></RouterLink>
+  <Footer/>
   </div>
-  </div>
-<Icons/>
+
+
 </template>
-<style scoped>
-.body{
-  width:100%;
-  height:100%;
-  margin-left: -10px;
-  margin-top: -10px;
-  margin-bottom: -2px;
-}
 
-.createTrips{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #81b7cd;
-  border-radius: 10px;
-  height:30px;
-  width:50px;
-  text-align: center;
-  justify-self: end;
-  margin-right: 30px;
-  font-size: 20px;
-  top:5%;
-  left:70%;
-  position: fixed;
-
-
-
-}
-.background{
-  background-image: url("");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  height: 100vh;
-  margin-bottom: 100px;
-  position: relative;
-
-
-
-}
-.thingsResult{
-  display: flex;
-  margin-bottom: 20px;
-  flex-direction: column;
-  width: 100%;
-  justify-content: center;
-  justify-items: center;
-  padding: 10px;
-  gap: 10px;
-  box-shadow: 0 8px 8px 3px rgba(18, 16, 16, 0.1);
-}
-.parkname{
-  color:aliceblue;
-  margin-left: 30px;
-
-
-}
-.parkname2{
-  color:aliceblue;
-  margin-left: 10px;
-  font-size: 50px;
-  text-align: center;
-
-
-}
-.resultBox{
-  width: 90%;
-  background-color:transparent;
-  height: 50px;
-  padding: 10px;
-  margin-bottom: 10px;
-  display:flex;
-  box-shadow: 0 8px 8px 3px rgba(18, 16, 16, 0.1);
-  border: 1px solid aliceblue;
-  color:aliceblue
-
-
-
-}
-.thingsName{
-  margin-top: 20px;
-  margin-left: 10px;
-}
-.parkImage{
-width:100%;
-height: 300px;
-top: 0px;
-border-top-left-radius: 20px;
-border-top-right-radius: 20px;
-
-}
-
-.park-Description{
-
-  font-size: 1rem;
-  line-height: 1.5;
-  margin-bottom: 2rem;
-  padding: 1rem;
-  box-shadow: 0 8px 8px rgba(0,0,0,0.1);
-  backdrop-filter: blur(10px);
-  background-color:transparent;
-  color: aliceblue;
-
-
-}
-.parkGallery{
-  background-color: rgb(42, 47, 47);
-  border: 1px solid white;
-
-
-}
-.section-title {
-  font-size: 1.5rem;
-  margin: 2rem 0 1rem;
-  padding-left: 10px;
-  background-color: transparent;
-  color:aliceblue;
-  backdrop-filter: blur(0px);
-  margin-top: 150px;
-
-
-}
-.sectiontitle {
-  font-size: 1.5rem;
-  margin: 2rem 0 1rem;
-  padding-left: 10px;
-  background-color: transparent;
-  color:aliceblue;
-  backdrop-filter: blur(0px);
-  margin-top: 30px;
-
-
-}
-.result2{
-
-  display: flex;
-  gap: 10px;
-  overflow-x: scroll;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  padding: 10px;
-  backdrop-filter: blur(10px);
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-
-}
-.resultBox2:hover{
-  transform: scale(1.05);
-
-}
-
-.resultBox2{
-  background-color: rgba(5, 5, 5, 0.5);
-  backdrop-filter: blur(20px);
-  color: aliceblue;
-
-  height: 190px;
-  padding: 1rem;
-  margin-bottom: 0.5rem;
-  border-radius:20px;
-  font-size: large;
-  top: 0px;
-  margin-left: auto;
-  margin-right: auto;
-  bottom: 25px;
-  box-shadow: 0 8px 4px rgba(18, 16, 16, 0.1);
-
-
-
-
-}
-.result2::-webkit-scrollbar {
-    display: none;
-}
-
-.parkname2{
-  margin-top: 10px;
-  font-weight: bold;
-  font-size: 50px;
-  height:50px;
-  border-bottom: 1px solid black;
-  margin-bottom: 20px;;
-}
-.previous{
-  position: relative;
-  margin-top:5px;
-  font-size: large;
-}
-.campImages{
-  width:160px;
-  height: 150px;
-  box-shadow: 0 8px 4px rgba(18, 16, 16, 0.1);
-  margin-bottom: 5px;
-
-}
-
-a{
-  text-decoration: none;
-  color: black;
-
-}
-.imageContainer{
-  position: relative;
-}
-.imageText{
-  color:aliceblue;
-}
-
-.parkGallery{
-  width:80px;
-  height: 80px;
-  border-radius:10px;
-  backdrop-filter: blur(10px);
-}
-
-.parkGalleryContainer{
-  position: relative;
-
-
-
-}
-.location{
-  top:40px;
-  position: relative;
-  left:10px;
-}
-.back{
-  position: relative;
-  top:10px;
-  height: 30px;
-  background-color: aqua;
-  width: 40px;
-  text-align: center;
-  border-radius: 5px;
-  cursor: pointer;
-
-}
-.parkGallery2{
-  height:110px;
-  display: flex;
-  overflow-x: scroll;
-  width: 100%;
-  gap: 3px;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-.parkGallery2::-webkit-scrollbar {
-    display: none;
-}
-
-
-.thingsResult{
-  display: flex;
-  box-shadow: #2a2727;
-  width: 93%;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 8px 8px rgba(18, 16, 16, 0.1);
-  gap:10px;
-  border: 1px solid aliceblue;
-}
-.thingsTodoImages{
-  width:50px;
-  border-radius: 5px;
-  justify-content: center;
-  margin-top: 10px;
-  box-shadow: 0 8px 8px 3px rgba(18, 16, 16, 0.1);
-}
-
-</style>

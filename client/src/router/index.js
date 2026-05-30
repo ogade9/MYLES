@@ -16,6 +16,8 @@ import EditTrip from "../views/EditTrip.vue";
 import EditExcursion from "../views/EditExcursion.vue"
 import Invites from "../views/Invites.vue";
 import SplashScreen from "../views/SplashScreen.vue";
+import Navbar from "../views/Navbar.vue";
+import Footer from "../views/Footer.vue";
 function authenticate(){
 
   return !!localStorage.getItem("token");
@@ -43,6 +45,16 @@ const router = createRouter({
       path: "/signin",
       name: "signin",
       component: Signin,
+    },
+    {
+      path: "/navbar",
+      name: "navbar",
+      component: Navbar,
+    },
+    {
+      path: "/footer",
+      name: "footer",
+      component: Footer,
     },
 
     {
@@ -79,11 +91,11 @@ const router = createRouter({
     },
 
     {
-      path:'/details/:parks/:states',
+      path:'/details/:parkCode',
       name:"details",
       component:Details,
       meta:{
-        authRequired:true},
+        authRequired:false},
 
     },
     {
