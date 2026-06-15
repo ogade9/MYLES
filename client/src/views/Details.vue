@@ -1,7 +1,7 @@
 <script setup>
 import Navbar from './Navbar.vue';
 import Footer from './Footer.vue';
-import {useRoute} from 'vue-router';
+import {useRoute, RouterLink} from 'vue-router';
 import { ref,onMounted } from 'vue';
 import { HugeiconsIcon } from '@hugeicons/vue'
 import { Location01Icon } from '@hugeicons/core-free-icons'
@@ -81,12 +81,13 @@ onMounted( async () =>{
         </h1>
 
       </div>
-
-      <button
-        class="rounded-2xl bg-pink-500 px-6 py-4 font-semibold text-white"
-      >
-        + Add to Trip
-      </button>
+      <RouterLink :to="`/trips/${parkcode}`" class="cursor-pointer">
+        <button
+          class="rounded-2xl bg-pink-500 px-6 py-4 font-semibold text-white"
+        >
+          + Add to Trip
+        </button>
+      </RouterLink>
     </div>
     <div class="flex flex-row  space-x-1 text-sm text-gray-400">
       <span class="text-sm"><HugeiconsIcon class="text-pink-300 h-5":icon="Location01Icon"/></span>

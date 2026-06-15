@@ -11,19 +11,60 @@ So my computer talks to port 5000 which talks to express server
 */
 const userSchema = new mongoose.Schema({
     userId: String,
-    fullname: String,
+    fullName: String,
     email: String,
-    username: String
+    userName: String,
+    friends: [String],
+    IncomingRequests: [{
+        senderId: String,
+        createdAt : {type: Date, default: Date.now}
+    }
+    ],
+    OutgoingRequests: [{
+        receiverId : String,
+        createdAt : {type: Date, default: Date.now}
+    }
+
+    ]
+
 })
-const user = mongoose.model('User', userSchema)
+const tripSchema = new mongoose.Schema({
+    tripName : String,
+    ownerId : String,
+    tripId: String,
+    startDate : Date,
+    endDate : Date,
+    parks :[{
+        parkCode: String,
+        activities : [String]
+        }],
+    sharedWith: [String],
+    createdAt:{type: Date, default: Date.now}
+
+})
 require('dotenv').config();
 const mongoURI = process.env.MONGO_URI
+const mongoURI1 = process.env.MONGO_URI_1
 const port = process.env.PORT || 5000
-
-mongoose.connect(mongoURI)
-    .then(() => console.log("Successfully connected to mongo database"))
-    .catch((err) => console.error("Connection error", err)
-    )
+const tripConnection = mongoose.createConnection(mongoURI1)
+const userConnection = mongoose.createConnection(mongoURI)
+const user = mongoose.model('User', userSchema)
+const usertrips = mongoose.model('Trip', tripSchema)
+userConnection.on('connected', () =>{
+    console.log("User Database Connected!!!")
+})
+userConnection.on('error', (err) =>{
+    console.log("Error connecting to the users database", err)
+})
+tripConnection.on('connected', () =>{
+    console.log("Trip Database Connected!!!")
+})
+tripConnection.on('error', (err) =>{
+    console.log("Error connecting to the trip database", err)
+})
+    //.then(() => console.log("Successfully connected to mongo database for trips"))
+    //.catch((err) => console.error("Connection error for trips", err)
+//)
 /*
 What are cors?
 CORS: Cross-Origin Resource Sharing

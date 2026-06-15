@@ -18,6 +18,7 @@ import Invites from "../views/Invites.vue";
 import SplashScreen from "../views/SplashScreen.vue";
 import Navbar from "../views/Navbar.vue";
 import Footer from "../views/Footer.vue";
+//import FullCalendar from "./components/FullCalendar.vue/index.js";
 function authenticate(){
 
   return !!localStorage.getItem("token");
@@ -115,11 +116,11 @@ const router = createRouter({
 
     },
     {
-      path:'/trips/:parks/:states',
+      path:'/trips/:parkCode',
       name:"trips",
       component:Trips,
       meta:{
-        authRequired:true},
+        authRequired:false},
 
     },
     {
@@ -133,14 +134,6 @@ const router = createRouter({
       path:'/friends',
       name:"friends",
       component: Friends,
-      meta:{
-        authRequired:true},
-
-    },
-    {
-      path:'/trips',
-      name:"trips",
-      component: Trips,
       meta:{
         authRequired:true},
 
